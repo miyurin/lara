@@ -136,7 +136,6 @@ $(function() {
     let random;
     let count = 0;
     let arrayIndex = [];
-    let arrayIndexTest = [];
 
     
     class Player {
@@ -159,12 +158,11 @@ $(function() {
     }
 
     class Zako {
-        constructor(hp,power,image,color,imageTest) {
+        constructor(hp,power,image,color) {
             this.hp = hp;
             this.power = power;
             this.image = image;
             this.color = color;
-            this.imageTest = imageTest;
         }
 
         setHp(hp) {
@@ -183,14 +181,6 @@ $(function() {
             return this.color;
         }
         
-        setImageTest(imageTest) {
-            this.imageTest = imageTest;
-        }
-
-        getImageTest() {
-            return this.imageTest;
-        }
-
         setImage(array) {
             // let rand = random;
             // random = Math.floor(Math.random() * (this.color.length));
@@ -212,14 +202,6 @@ $(function() {
             return arr;
         }
 
-        getZakoIndexTest(array) {
-            let arr = [];
-            for(let i=0; i<array.length; i++) {
-                let random = Math.floor(Math.random()*(this.imageTest.length));
-                arr.push(random);
-            }
-            return arr;
-        }
         setMessage() {
             console.log(this.color[random] + "が現れた!!!");
         }
@@ -233,7 +215,7 @@ $(function() {
     const v = document.getElementById('video');
     
     
-    zako = new Zako(1,1,"zako",["red", "orange", "yellow", "green", "blue", "purple", "black"],[1,2,3,4,5,6,7,8,9,10,11,12]);
+    zako = new Zako(1,1,"zako",["red", "orange", "yellow", "green", "blue", "purple", "black"]);
     p = new Player(1500000,10);
     initPlayerHp = p.hp;
 
@@ -250,24 +232,18 @@ $(function() {
             ja_arr = sepaJa(word); //かな文字を分解した配列を取得
             $("#reading").html(setElement(ja_arr)); //reading id デフォルトローマ字を設定
             arrayIndex = zako.getZakoIndex(ja_arr);
-            arrayIndexTest = zako.getZakoIndexTest(ja_arr);
-            console.log(arrayIndex);
-            console.log(arrayIndexTest);
-            $(".enemy-area").empty().css("left", "0");
-            let elm = "";
-            for(let i=0; i<arrayIndex.lengtBKh; i++) {
-                elm += "<div class=\"enemy\"><p class=\"zako\" style=\"background-color:"+ zako.color[arrayIndex[i]]+";\"><img src=\"images/"+zako.imageTest[arrayIndexTest[i]]+".png\""+"</p></div>";
+            for(let i=0; i<$(".enemy").length; i++) {
+                $(".enemy").eq(i).html("<div class=\"zako\" style=\"background-color:"+ zako.color[arrayIndex[i]] +";\">/div>");
             }
-            $(".enemy-area").append(elm).hide().fadeIn(200);
+            $(".zako").hide().fadeIn(200);
         }
     });
     
     window.addEventListener('keydown', e => { //ゲームが始まっていたら キー入力が表示される
-        
         if (isPlaying === false) {
             return;
         }
-
+        
         if((e.key).length > 1) { //キーを入力してそのキーの文字列が１より大きい場合以外は反映されない
             return;
         }
@@ -276,7 +252,6 @@ $(function() {
         romanArray = kana[ja_arr[loc]]; //ひらがな全体のloc番目のローマ字を設定
         
         let key = e.key;
-        console.log(key);
         str += key; //key入力
         
         testArray = [];
@@ -294,47 +269,79 @@ $(function() {
             if(testArray[0] === str) { //testArrayの部分文字がstrの文字数と同じだったら
                 
                 
+                $(".action").addClass("attack").fadeOut(200, () => {
+                    $(".action").removeClass("attack").css("display", "block");
+                });
+                
+                arrayIndex.shift();
+
+                for(let i=0; i<$(".enemy").length; i++) {
+                    $(".enemy").eq(i)
+                    .html("<div class=\"zako\" style=\"background-color:"+ zako.color[arrayIndex[i]] +";\">/div>");
+                }
+                
+                
+
+                    
+                loc++; //次のtestArrayに映るためのインクリメント
                 cnt = 0; //カウントを0に初期化
                 str = ""; //str初期化
-                $(".enemy").eq(0).fadeOut(10, ()=>{
-                    $(".enemy").eq(0).remove();
-                    loc++; //次のtestArrayに映るためのインクリメント
-                    if(ja_arr.length === loc) {
-                        loc = 0;
-                        next++;
-                        if(words.length === next) {
-                            next = 0;
-                        }
-                        console.log(next);
-                        console.log(words.length);
-                        word = words[next].word2;
-                        ja_arr = sepaJa(word);
-                        $("#reading").html(setElement(ja_arr));
-                        arrayIndex = zako.getZakoIndex(ja_arr);
-                        arrayIndexTest = zako.getZakoIndexTest(ja_arr);
-                        $(".enemy-area").empty().css("left", "0");
-                        let elm = "";
-                        for(let i=0; i<arrayIndex.length; i++) {
-                            elm += "<div class=\"enemy\"><p class=\"zako\" style=\"background-color:"+ zako.color[arrayIndex[i]]+";\"><img src=\"images/"+zako.imageTest[arrayIndexTest[i]]+".png\"></p></div>";
-                        }
-                        $(".enemy-area").append(elm);
-                        target.textContent = words[next].word1;
-                        hiragana.textContent = words[next].word2;
-                        scoreLabel.textContent = score;
-                        missLabel.textContent = miss;
+                v.currentTime = 0;
+                v.play();
+                // $("#zako"+loc)
+                // $(".zako").fadeOut(300, () => {
+                    //         $(".zako").fadeIn(10, () => {
+                        //         $(".action").addClass("attack").fadeOut(200, () => {
+                            //                 $(".action").removeClass("attack").css("display", "block");
+                            //         });
+                            //     });
+                            // });
+
+                if(ja_arr.length === loc) {
+                    next++;
+                    loc = 0;
+                    if(invalid > 0) {
+                        invalid = 0;
+                        critical = 0;
+                        p.setPower(10);
+                    }else {
+                        critical++;
+                        p.setPower(p.getPower() * critical);
+                        p.setPower(10);
                     }
-                });
+                    s = 0;
+                    if(p.hp <= 0) {
+                        p.hp = 0;
+                        target.textContent = "もう一度挑戦しますか?";
+                        hiragana.textContent = "Enterを押して再開します";
+                        reading.textContent = "ゲームオーバー!!!";
+                        next = 0;
+                        isPlaying = false;
+                        bossFlag = 0;
+                        isDead = true;
+                        return;
+                    }
+                    if(arr.length === next) {
+                        next = 0;
+                    }
+                    word = words[next].word2;
+                    ja_arr = sepaJa(word);
+                    $("#reading").html(setElement(ja_arr));
+                    arrayIndex = zako.getZakoIndex(ja_arr);
+                    for(let i=0; i<$(".enemy").length; i++) {
+                        $(".enemy").eq(i).html("<div class=\"zako\" style=\"background-color:"+ zako.color[arrayIndex[i]] +";\">/div>");
+                    }
+                }
             }
         }
+        
+        
+        target.textContent = words[next].word1;
+        hiragana.textContent = words[next].word2;
+        scoreLabel.textContent = score;
+        missLabel.textContent = miss;
+        
     });
-
-    function createElem(number) {
-        let str = "";
-        for(let i=0; i<number; i++) {
-            str += "<div class=\"enemy-area\"></div>"
-        }
-        return str;
-    }
     
     
     function setElement(array) {
@@ -535,27 +542,3 @@ $(function() {
                                                                                                             //     }
                                                                                                             // }
             // }
-                    // if(invalid > 0) {
-                    //     invalid = 0;
-                    //     critical = 0;
-                    //     p.setPower(10);
-                    // }else {
-                    //     critical++;
-                    //     p.setPower(p.getPower() * critical);
-                    //     p.setPower(10);
-                    // }
-                    // s = 0;
-                    // if(p.hp <= 0) {
-                    //     p.hp = 0;
-                    //     target.textContent = "もう一度挑戦しますか?";
-                    //     hiragana.textContent = "Enterを押して再開します";
-                    //     reading.textContent = "ゲームオーバー!!!";
-                    //     next = 0;
-                    //     isPlaying = false;
-                    //     bossFlag = 0;
-                    //     isDead = true;
-                    //     return;
-                    // }
-                    // if(word.length === next) {
-                    //     next = 0;
-                    // }

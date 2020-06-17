@@ -22,6 +22,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::group(['middleware' => ['auth', 'can:user-higher']], function () {
 // ユーザ一覧
     Route::get('/account', 'AccountController@index')->name('account.index');
+    Route::get('type','TypesController@index');
     
 });
 
@@ -46,7 +47,6 @@ Route::group(['middleware' => ['auth', 'can:admin-higher']], function () {
     Route::get('word/words/{word}/edit', 'WordsController@edit');
     Route::patch('word/words/{word}', 'WordsController@update');
     Route::delete('word/words/{word}', 'WordsController@destroy');
-    Route::get('type','TypesController@index');
 });
 
 // システム管理者のみ

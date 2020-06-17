@@ -27,7 +27,6 @@
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
         <script>
             let words = {!! json_encode($collection) !!};
-            console.log(words);
         </script>
         <script src="js/typing.js"></script>
     </body>

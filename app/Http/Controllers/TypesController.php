@@ -11,7 +11,7 @@ class TypesController extends Controller
         $words = Word::get();
         $array1 = [];
         $length = Word::count('id');
-        for($i=0; $i<$length; $i++) {
+        for($i=1; $i<=$length; $i++) {
             $arr = $words->where('id', $i)->toArray();//未修正
             if(empty($arr)) {
                 continue;
