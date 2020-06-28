@@ -17,6 +17,12 @@
                     You are logged in!
                 </div>
             </div>
+            <div class="panel">
+                <a href="/type">タイピング</a>
+            </div>
+            <div class="panel">
+                <a href="/word">ワード登録</a>
+            </div>
         </div>
     </div>
 </div>
